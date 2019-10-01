@@ -41,15 +41,15 @@ class NameIssueDetector(Detector):
     def _check_name_empty(self, table, name, report_columns):
         query = "SELECT {} FROM {} WHERE {} = '' {}".format(
             ",".join(report_columns), table, name, self._get_prefix_condition(table))
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor("{}._check_name_empty".format(self.get_name()))
         cursor.execute(query)
-        return cursor.fetchall()
+        return cursor
 
     def _check_name_buggy_characters(self, table, name, report_columns):
         query = r"SELECT {} FROM {} WHERE {} ~ '[\`\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f]' {}".format( ",".join(report_columns), table, name, self._get_prefix_condition(table))
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor("{}._check_buggy_characters".format(self.get_name()))
         cursor.execute(query)
-        return cursor.fetchall()
+        return cursor
 
     def run(self):
         issue_found = False
@@ -70,6 +70,7 @@ class NameIssueDetector(Detector):
                     column_num = column_num + 1
                 self.output_item(output)
                 issue_found = True
+            result_empty.close()
 
             if self.args.v:
                 self.output_message("Running problematic character name test for: " + check_name)
@@ -93,5 +94,6 @@ class NameIssueDetector(Detector):
                     column_num = column_num + 1
                 self.output_item(output)
                 issue_found = True
+            result_buggy_characters.close()
 
         return issue_found

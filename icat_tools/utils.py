@@ -26,10 +26,10 @@ def get_collection_name(connection, search_coll_id):
         str(search_coll_id))
     cursor = connection.cursor()
     cursor.execute(query)
-    names = cursor.fetchall()
-    if len(names) == 1:
-        return names[0][0]
-    elif len(names) > 1:
+    if cursor.rowcount == 1:
+        collection = cursor.fetchone()
+        return collection[0]
+    elif cursor.rowcount > 1:
         raise ValueError(
             "Unexpected duplicate result when retrieving collection name.")
     else:
@@ -41,11 +41,12 @@ def get_dataobject_name(connection, search_data_id):
         str(search_data_id))
     cursor = connection.cursor()
     cursor.execute(query)
-    names = cursor.fetchall()
-    if len(names) >= 1:
+    
+    if cursor.rowcount >= 1:
         # It is possible that we get multiple matches for the dataobject id, because the table
         # has separate entries for replicas
-        return get_collection_name(connection, names[0][1]) + "/" + names[0][0]
+        data_entry = cursor.fetchone()
+        return get_collection_name(connection, data_entry[1]) + "/" + data_entry[0]
     else:
         return None
 
@@ -56,7 +57,7 @@ def get_resource_vault_path_dict(connection):
     result = {}
     cursor = connection.cursor()
     cursor.execute(query)
-    for row in cursor.fetchall():
+    for row in cursor:
         result[row[0]] = row[1]
     return result
 
@@ -67,7 +68,7 @@ def get_resource_name_dict(connection):
     result = {}
     cursor = connection.cursor()
     cursor.execute(query)
-    for row in cursor.fetchall():
+    for row in cursor:
         result[row[0]] = row[1]
     return result
 
@@ -76,8 +77,8 @@ def get_coll_path_dict(connection):
     '''Returns a dictionary with collection ids (keys) and collection names (values) of all collections. '''
     query = "SELECT coll_id, coll_name FROM r_coll_main"
     result = {}
-    cursor = connection.cursor()
+    cursor = connection.cursor('get_coll_path_dict')
     cursor.execute(query)
-    for row in cursor.fetchall():
+    for row in cursor:
         result[row[0]] = row[1]
     return result

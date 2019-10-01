@@ -45,7 +45,7 @@ class TimestampIssueDetector(Detector):
             ",".join(report_columns), table, first_ts, second_ts, self._get_prefix_condition(table))
         cursor = self.connection.cursor()
         cursor.execute(query)
-        return cursor.fetchall()
+        return cursor
 
     def _check_timestamp_future(self, table, report_columns, max_ts,
                                 first_ts='create_ts', second_ts='modify_ts'):
@@ -53,7 +53,7 @@ class TimestampIssueDetector(Detector):
             ",".join(report_columns), table, first_ts, max_ts, second_ts, max_ts, self._get_prefix_condition(table))
         cursor = self.connection.cursor()
         cursor.execute(query)
-        return cursor.fetchall()
+        return cursor
 
     def run(self):
         issue_found = False
@@ -73,6 +73,7 @@ class TimestampIssueDetector(Detector):
                     column_num = column_num + 1
                 self.output_item(output)
                 issue_found = True
+           result_order.close()
 
            if self.args.v:
                self.output_message("Running future timestamp test for: " + check_name)
@@ -89,5 +90,6 @@ class TimestampIssueDetector(Detector):
                     column_num = column_num + 1
                 self.output_item(output)
                 issue_found = True
+           result_future.close()     
 
         return issue_found

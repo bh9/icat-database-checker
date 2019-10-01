@@ -22,10 +22,10 @@ class HardlinkDetector(Detector):
             query = "SELECT data_id, data_path FROM r_data_main WHERE resc_id = {}".format(resc_id)
 
             lookup_path = {}
-            cursor = self.connection.cursor()
+            cursor = self.connection.cursor(self.get_name())
             cursor.execute(query)
 
-            for row in cursor.fetchall():
+            for row in cursor:
                 if row[1] in lookup_path:
                     issue_found = True
                     this_object = utils.get_dataobject_name(
@@ -47,5 +47,7 @@ class HardlinkDetector(Detector):
                              'object2': other_object})
                 else:
                     lookup_path[row[1]] = row[0]
+
+            cursor.close()
 
         return issue_found

@@ -17,11 +17,11 @@ class MinreplicaIssueDetector(Detector):
             query_condition = "WHERE concat ( ( select coll_name from r_coll_main where coll_id = r_data_main.coll_id ), '/', r_data_main.data_name) LIKE '{}%'".format(self.args.data_object_prefix)
 
         query = "SELECT data_id, resc_id FROM r_data_main {}".format(query_condition)
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor(self.get_name())
         cursor.execute(query)
         data_resc_lookup = {}
 
-        for row in cursor.fetchall():
+        for row in cursor:
             if row[0] in data_resc_lookup:
                 if row[1] not in data_resc_lookup[row[0]]:
                     data_resc_lookup[row[0]][row[1]] = ""

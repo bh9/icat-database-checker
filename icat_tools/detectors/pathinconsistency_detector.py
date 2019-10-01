@@ -22,10 +22,10 @@ class PathInconsistencyDetector(Detector):
                         self.args.data_object_prefix)
 
         query = "SELECT data_id, coll_id, resc_id, data_path FROM r_data_main {}".format(query_condition)
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor(self.get_name())
         cursor.execute(query)
 
-        for row in cursor.fetchall():
+        for row in cursor:
             vaultpath = pathlib.Path(resource_path_lookup[row[2]])
             dirname = pathlib.Path(*pathlib.Path(row[3]).parts[:-1])
             dirname_without_vault = dirname.relative_to(vaultpath)
@@ -40,4 +40,5 @@ class PathInconsistencyDetector(Detector):
                     'dir_name': dirname_without_vault})
                 issue_found = True
 
+        cursor.close()
         return issue_found

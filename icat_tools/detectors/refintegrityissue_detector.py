@@ -111,7 +111,7 @@ class RefIntegrityIssueDetector(Detector):
                 " AND ".join(conditions))
         cursor = self.connection.cursor()
         cursor.execute(query)
-        return cursor.fetchall()
+        return cursor
 
     def run(self):
         issue_found = False
@@ -137,5 +137,7 @@ class RefIntegrityIssueDetector(Detector):
                     column_num = column_num + 1
                 self.output_item(output)
                 issue_found = True
+
+            result.close()
 
         return issue_found
