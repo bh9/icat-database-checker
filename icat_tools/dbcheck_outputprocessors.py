@@ -100,6 +100,15 @@ class CheckOutputProcessorHuman(OutputProcessor):
                         values['type']))
                 sys.exit(1)
 
+        elif check == 'indexes':
+            if values['type'] == 'missing_index':
+                self._prnln("Missing index: {}".format(values['index']))
+            else:
+                self._prnln(
+                    "Error: unknown output item type for index check: {}".format(
+                        values['type']))
+                sys.exit(1)
+
         else:
             self._prnln("Error: unknown output check type: {}".format(check))
             sys.exit(1)
@@ -162,6 +171,15 @@ class CheckOutputProcessorCSV(OutputProcessor):
             else:
                 print(
                     "Error: unknown output item type for timetamps check: {}".format(
+                        values['type']))
+                sys.exit(1)
+
+        elif check == 'indexes':
+            if values['type'] == 'missing_index':
+                self.writer.writerow([check, values['type'], values['index']])
+            else:
+                print(
+                    "Error: unknown output item type for index check: {}".format(
                         values['type']))
                 sys.exit(1)
 

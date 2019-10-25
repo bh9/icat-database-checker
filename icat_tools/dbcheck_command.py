@@ -8,6 +8,7 @@ from icat_tools.detectors.nameissue_detector import NameIssueDetector
 from icat_tools.detectors.pathinconsistency_detector import PathInconsistencyDetector
 from icat_tools.detectors.refintegrityissue_detector import RefIntegrityIssueDetector
 from icat_tools.detectors.timestampissue_detector import TimestampIssueDetector
+from icat_tools.detectors.missingindex_detector import MissingIndexDetector
 import sys
 
 
@@ -18,6 +19,7 @@ class TestSubset(Enum):
     hardlinks = 'hardlinks'
     minreplicas = 'minreplicas'
     path_consistency = 'path_consistency'
+    indexes = "indexes"
     all = 'all'
 
     def __str__(self):
@@ -91,7 +93,8 @@ def main():
         MinreplicaIssueDetector(args, connection, output_processor),
         RefIntegrityIssueDetector(args, connection, output_processor),
         TimestampIssueDetector(args, connection, output_processor),
-        NameIssueDetector(args, connection, output_processor)]
+        NameIssueDetector(args, connection, output_processor),
+        MissingIndexDetector(args, connection, output_processor)]
 
     issue_found = False
 

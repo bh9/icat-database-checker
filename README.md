@@ -7,10 +7,12 @@ This script checks the iRODS ICAT database for unexpected issues, specifically:
 - Empty object names
 - Object names that contain characters which are not handled correctly on XML-based clients,
   such as the python-irods-client (See https://github.com/irods/irods/issues/4132 for details).
+- Data objects with empty names
 - Files in vaults that have a directory name which is inconsistent with the collection name
 - Hard links: multiple data objects refer to the same physical file
 - Duplicate replica: multiple replica entries for the same file
 - Data objects with too few replicas (the default minimum is one replica)
+- Missing indexes
 
 The present version of the script is suitable for Postgresql databases. It is compatible with iRODS 4.2.x.
 
@@ -34,7 +36,7 @@ Now create a virtual environment and install the tool:
 ```
 usage: icat-database-checker [-h] [--config-file CONFIG_FILE] [-m {human,csv}]
                              [-v]
-                             [--run-test {ref_integrity,timestamps,names,hardlinks,minreplicas,path_consistency,all}]
+                             [--run-test {ref_integrity,timestamps,names,hardlinks,minreplicas,path_consistency,indexes,all}]
                              [--min-replicas MIN_REPLICAS]
 
 Performs a number of sanity checks on the iRODS ICAT database
